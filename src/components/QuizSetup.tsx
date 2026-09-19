@@ -28,9 +28,16 @@ import {
 interface QuizSetupProps {
   onStartQuiz: (config: QuizConfig) => void;
   totalQuestionsAvailable: number;
+  onOpenQuestionManager?: () => void;
+  customQuestionsCount?: number;
 }
 
-export const QuizSetup: React.FC<QuizSetupProps> = ({ onStartQuiz, totalQuestionsAvailable }) => {
+export const QuizSetup: React.FC<QuizSetupProps> = ({
+  onStartQuiz,
+  totalQuestionsAvailable,
+  onOpenQuestionManager,
+  customQuestionsCount = 0,
+}) => {
   const [selectedTheme, setSelectedTheme] = useState<ThemeId>('todas');
   const [selectedDifficulty, setSelectedDifficulty] = useState<Difficulty | 'todas'>('todas');
   const [selectedMode, setSelectedMode] = useState<GameMode>('equipes');
@@ -251,6 +258,48 @@ export const QuizSetup: React.FC<QuizSetupProps> = ({ onStartQuiz, totalQuestion
           </div>
         </div>
       </div>
+
+      {/* Upload and Custom Questions Action Banner */}
+      {onOpenQuestionManager && (
+        <div className="p-4 sm:p-5 rounded-2xl bg-white border border-amber-300 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="w-11 h-11 rounded-xl bg-amber-100 text-amber-800 flex items-center justify-center shrink-0">
+              <Scroll className="w-6 h-6 text-amber-700" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2 flex-wrap">
+                <h3 className="font-bold text-sm sm:text-base text-stone-900">
+                  Adicionar Novas Perguntas (.txt ou .pdf)
+                </h3>
+                {customQuestionsCount > 0 ? (
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 border border-emerald-300">
+                    {customQuestionsCount} perguntas salvas no navegador
+                  </span>
+                ) : (
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-stone-100 text-stone-600">
+                    Importação de Arquivos
+                  </span>
+                )}
+              </div>
+              <p className="text-xs text-stone-600 mt-0.5">
+                Envie documentos em texto ou PDF, revise no preview para validação e inclua no banco de dados local da gincana.
+              </p>
+            </div>
+          </div>
+
+          <button
+            type="button"
+            onClick={() => {
+              soundManager.playClick();
+              onOpenQuestionManager();
+            }}
+            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs shadow-xs flex items-center justify-center gap-2 transition-all cursor-pointer shrink-0"
+          >
+            <span>Fazer Upload / Gerenciar</span>
+            <ArrowRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
 
       {/* Quick Start Presets (Other options) */}
       <div className="space-y-4">

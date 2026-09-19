@@ -3,15 +3,17 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { QuizConfig, Question, AnswerRecord } from './types';
 import { BIBLICAL_QUESTIONS } from './data/questions';
 import { prepareQuestions } from './utils/quizBuilder';
+import { loadCustomQuestions, saveCustomQuestions } from './utils/customQuestionsStorage';
 import { Navbar } from './components/Navbar';
 import { QuizSetup } from './components/QuizSetup';
 import { QuizPlay } from './components/QuizPlay';
 import { QuizSummary } from './components/QuizSummary';
 import { QuestionBankModal } from './components/QuestionBankModal';
+import { QuestionManagerModal } from './components/QuestionManagerModal';
 
 export default function App() {
   const [view, setView] = useState<'setup' | 'playing' | 'summary'>('setup');
@@ -36,13 +38,36 @@ export default function App() {
   const [fontScale, setFontScale] = useState<number>(1.0);
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isQuestionBankOpen, setIsQuestionBankOpen] = useState<boolean>(false);
+  const [isQuestionManagerOpen, setIsQuestionManagerOpen] = useState<boolean>(false);
+
+  // Custom user questions loaded from localStorage
+  const [customQuestions, setCustomQuestions] = useState<Question[]>([]);
+
+  // Load custom questions on initial mount
+  useEffect(() => {
+    const loaded = loadCustomQuestions();
+    if (loaded && loaded.length > 0) {
+      setCustomQuestions(loaded);
+    }
+  }, []);
+
+  // Combined pool: original questions + custom imported questions
+  const allAvailableQuestions = useMemo(() => {
+    return [...BIBLICAL_QUESTIONS, ...customQuestions];
+  }, [customQuestions]);
+
+  // Handler to update custom questions from QuestionManagerModal
+  const handleSaveCustomQuestions = (updated: Question[]) => {
+    setCustomQuestions(updated);
+    saveCustomQuestions(updated);
+  };
 
   // Start a new Quiz session with configured parameters
   const handleStartQuiz = (newConfig: QuizConfig) => {
     setConfig(newConfig);
 
-    // Use builder to handle theme filtering, difficulty ordering, and team question division
-    const selected = prepareQuestions(newConfig, BIBLICAL_QUESTIONS);
+    // Use builder with complete pool of original + custom questions
+    const selected = prepareQuestions(newConfig, allAvailableQuestions);
 
     setActiveQuestions(selected);
     setRecords([]);
@@ -66,7 +91,7 @@ export default function App() {
 
   // Retrain only mistakes
   const handleReviewMistakesOnly = (mistakeIds: string[]) => {
-    const mistakeQuestions = BIBLICAL_QUESTIONS.filter((q) => mistakeIds.includes(q.id));
+    const mistakeQuestions = allAvailableQuestions.filter((q) => mistakeIds.includes(q.id));
     if (mistakeQuestions.length > 0) {
       setActiveQuestions(mistakeQuestions);
       setRecords([]);
@@ -81,6 +106,8 @@ export default function App() {
       <Navbar
         onReset={handleReset}
         onOpenQuestionBank={() => setIsQuestionBankOpen(true)}
+        onOpenQuestionManager={() => setIsQuestionManagerOpen(true)}
+        customQuestionsCount={customQuestions.length}
         fontScale={fontScale}
         setFontScale={setFontScale}
         isMuted={isMuted}
@@ -92,7 +119,9 @@ export default function App() {
         {view === 'setup' && (
           <QuizSetup
             onStartQuiz={handleStartQuiz}
-            totalQuestionsAvailable={BIBLICAL_QUESTIONS.length}
+            totalQuestionsAvailable={allAvailableQuestions.length}
+            onOpenQuestionManager={() => setIsQuestionManagerOpen(true)}
+            customQuestionsCount={customQuestions.length}
           />
         )}
 
@@ -122,6 +151,17 @@ export default function App() {
         isOpen={isQuestionBankOpen}
         onClose={() => setIsQuestionBankOpen(false)}
         fontScale={fontScale}
+        allQuestions={allAvailableQuestions}
+        onOpenQuestionManager={() => setIsQuestionManagerOpen(true)}
+      />
+
+      {/* Custom Questions Upload & Management Modal */}
+      <QuestionManagerModal
+        isOpen={isQuestionManagerOpen}
+        onClose={() => setIsQuestionManagerOpen(false)}
+        customQuestions={customQuestions}
+        onSaveQuestions={handleSaveCustomQuestions}
+        fontScale={fontScale}
       />
 
       {/* Footer */}
@@ -133,6 +173,11 @@ export default function App() {
           <p>
             Conteúdo fiel baseado em: <em>Cartas Paulinas</em>, <em>Classe Catecúmenos</em>, <em>Quiz EBD 2025</em> e <em>Gincana de Adultos</em>.
           </p>
+          {customQuestions.length > 0 && (
+            <p className="text-[11px] text-amber-800 font-medium">
+              ✨ {customQuestions.length} {customQuestions.length === 1 ? 'pergunta personalizada adicionada' : 'perguntas personalizadas adicionadas'} salvas no navegador.
+            </p>
+          )}
           <p className="text-[11px] text-stone-700 pt-1">
             "Examinais as Escrituras, porque julgais ter nelas a vida eterna, e são elas mesmas que testificam de mim." — João 5:39
           </p>

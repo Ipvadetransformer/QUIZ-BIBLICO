@@ -17,12 +17,16 @@ interface QuestionBankModalProps {
   isOpen: boolean;
   onClose: () => void;
   fontScale: number;
+  allQuestions?: Question[];
+  onOpenQuestionManager?: () => void;
 }
 
 export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
   isOpen,
   onClose,
   fontScale,
+  allQuestions = BIBLICAL_QUESTIONS,
+  onOpenQuestionManager,
 }) => {
   const [searchTerm, setSearchTerm] = useState<string>('');
   const [selectedTheme, setSelectedTheme] = useState<ThemeId | 'todas'>('todas');
@@ -32,7 +36,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
 
   if (!isOpen) return null;
 
-  const filtered = BIBLICAL_QUESTIONS.filter((q) => {
+  const filtered = allQuestions.filter((q) => {
     const matchesTheme = selectedTheme === 'todas' || q.theme === selectedTheme;
     const matchesDiff = selectedDifficulty === 'todas' || q.difficulty === selectedDifficulty;
     const term = searchTerm.toLowerCase();
@@ -76,20 +80,34 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
               Banco de Questões Bíblicas Completo
             </h2>
             <p className="text-xs text-stone-700 mt-0.5">
-              45 perguntas originais extraídas dos documentos da EBD, Catecúmenos e Cartas Paulinas.
+              {allQuestions.length} perguntas disponíveis (incluindo questões originais e personalizadas).
             </p>
           </div>
 
-          <button
-            onClick={() => {
-              soundManager.playClick();
-              onClose();
-            }}
-            className="p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 transition-colors cursor-pointer"
-            title="Fechar banco de questões"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          <div className="flex items-center gap-2">
+            {onOpenQuestionManager && (
+              <button
+                onClick={() => {
+                  soundManager.playClick();
+                  onClose();
+                  onOpenQuestionManager();
+                }}
+                className="px-3 py-1.5 rounded-lg bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-colors cursor-pointer"
+              >
+                + Adicionar / Upload
+              </button>
+            )}
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                onClose();
+              }}
+              className="p-2 rounded-lg text-stone-600 hover:text-stone-900 hover:bg-stone-200/60 transition-colors cursor-pointer"
+              title="Fechar banco de questões"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
         </div>
 
         {/* Filters and Search toolbar */}

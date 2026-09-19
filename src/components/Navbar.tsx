@@ -1,10 +1,12 @@
 import React from 'react';
-import { BookOpen, Volume2, VolumeX, RotateCcw, BookMarked, Type } from 'lucide-react';
+import { BookOpen, Volume2, VolumeX, RotateCcw, BookMarked, Type, FileUp } from 'lucide-react';
 import { soundManager } from '../utils/audio';
 
 interface NavbarProps {
   onReset: () => void;
   onOpenQuestionBank: () => void;
+  onOpenQuestionManager?: () => void;
+  customQuestionsCount?: number;
   fontScale: number;
   setFontScale: React.Dispatch<React.SetStateAction<number>>;
   isMuted: boolean;
@@ -14,6 +16,8 @@ interface NavbarProps {
 export const Navbar: React.FC<NavbarProps> = ({
   onReset,
   onOpenQuestionBank,
+  onOpenQuestionManager,
+  customQuestionsCount = 0,
   fontScale,
   setFontScale,
   isMuted,
@@ -97,12 +101,32 @@ export const Navbar: React.FC<NavbarProps> = ({
               soundManager.playClick();
               onOpenQuestionBank();
             }}
-            className="p-2 sm:px-3 sm:py-1.5 rounded-lg border border-amber-200 bg-white/80 hover:bg-amber-100/60 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition-colors"
+            className="p-2 sm:px-3 sm:py-1.5 rounded-lg border border-amber-200 bg-white/80 hover:bg-amber-100/60 text-stone-700 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
             title="Ver todas as perguntas e referências bíblicas"
           >
             <BookMarked className="w-4 h-4 text-amber-700" />
             <span className="hidden sm:inline">Banco de Questões</span>
           </button>
+
+          {/* Upload / Gerenciador de Perguntas */}
+          {onOpenQuestionManager && (
+            <button
+              onClick={() => {
+                soundManager.playClick();
+                onOpenQuestionManager();
+              }}
+              className="p-2 sm:px-3 sm:py-1.5 rounded-lg border border-amber-300 bg-amber-50 hover:bg-amber-100/80 text-amber-900 text-xs font-semibold flex items-center gap-1.5 transition-colors cursor-pointer"
+              title="Fazer upload de arquivos .txt/.pdf e gerenciar novas perguntas"
+            >
+              <FileUp className="w-4 h-4 text-amber-700" />
+              <span className="hidden sm:inline">Adicionar Perguntas</span>
+              {customQuestionsCount > 0 && (
+                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded-full bg-amber-600 text-white">
+                  {customQuestionsCount}
+                </span>
+              )}
+            </button>
+          )}
 
           {/* Início / Reiniciar */}
           <button
