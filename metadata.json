@@ -1,0 +1,6 @@
+{
+  "name": "Quiz Bíblico EBD",
+  "description": "Quiz Bíblico interativo com perguntas e respostas bíblicas em diferentes níveis de dificuldade e temas para todas as idades.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
