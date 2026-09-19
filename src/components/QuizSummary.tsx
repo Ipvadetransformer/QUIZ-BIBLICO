@@ -199,47 +199,47 @@ export const QuizSummary: React.FC<QuizSummaryProps> = ({
         </p>
 
         {/* Score Highlights */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3.5 mt-8 max-w-2xl mx-auto">
-          <div className="p-4 rounded-xl bg-stone-50 border border-stone-200 text-center">
-            <span className="text-xs text-stone-700 font-semibold block uppercase">
-              Total de Questões
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 sm:gap-3.5 mt-6 sm:mt-8 max-w-2xl mx-auto">
+          <div className="p-3 sm:p-4 rounded-xl bg-stone-50 border border-stone-200 text-center">
+            <span className="text-[10px] sm:text-xs text-stone-700 font-semibold block uppercase">
+              Total Questões
             </span>
-            <span className="text-2xl sm:text-3xl font-extrabold text-stone-900 font-display">
+            <span className="text-xl sm:text-3xl font-extrabold text-stone-900 font-display">
               {total}
             </span>
-            <span className="text-[11px] text-stone-500 block mt-0.5">
+            <span className="text-[10px] sm:text-[11px] text-stone-500 block mt-0.5">
               Máx: {maxPossiblePoints} pts
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
-            <span className="text-xs text-emerald-800 font-semibold block uppercase">Acertos</span>
-            <span className="text-2xl sm:text-3xl font-extrabold text-emerald-700 font-display">
+          <div className="p-3 sm:p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+            <span className="text-[10px] sm:text-xs text-emerald-800 font-semibold block uppercase">Acertos</span>
+            <span className="text-xl sm:text-3xl font-extrabold text-emerald-700 font-display">
               {correctCount}
             </span>
-            <span className="text-[11px] text-emerald-800 font-semibold block mt-0.5">
-              +{totalPointsEarned} pts obtidos
+            <span className="text-[10px] sm:text-[11px] text-emerald-800 font-semibold block mt-0.5">
+              +{totalPointsEarned} pts
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-rose-50 border border-rose-200 text-center">
-            <span className="text-xs text-rose-800 font-semibold block uppercase">Erros</span>
-            <span className="text-2xl sm:text-3xl font-extrabold text-rose-700 font-display">
+          <div className="p-3 sm:p-4 rounded-xl bg-rose-50 border border-rose-200 text-center">
+            <span className="text-[10px] sm:text-xs text-rose-800 font-semibold block uppercase">Erros</span>
+            <span className="text-xl sm:text-3xl font-extrabold text-rose-700 font-display">
               {incorrectCount}
             </span>
-            <span className="text-[11px] text-rose-600 block mt-0.5">
-              {total > 0 ? Math.round((incorrectCount / total) * 100) : 0}% de erro
+            <span className="text-[10px] sm:text-[11px] text-rose-600 block mt-0.5">
+              {total > 0 ? Math.round((incorrectCount / total) * 100) : 0}% erro
             </span>
           </div>
 
-          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200 text-center">
-            <span className="text-xs text-amber-900 font-semibold block uppercase">
-              Aproveitamento Geral
+          <div className="p-3 sm:p-4 rounded-xl bg-amber-50 border border-amber-200 text-center">
+            <span className="text-[10px] sm:text-xs text-amber-900 font-semibold block uppercase">
+              Aproveitamento
             </span>
-            <span className="text-2xl sm:text-3xl font-extrabold text-amber-800 font-display">
+            <span className="text-xl sm:text-3xl font-extrabold text-amber-800 font-display">
               {percent}%
             </span>
-            <span className="text-[11px] text-amber-900 font-medium block mt-0.5">
+            <span className="text-[10px] sm:text-[11px] text-amber-900 font-medium block mt-0.5">
               {totalPointsEarned}/{maxPossiblePoints} pts
             </span>
           </div>
@@ -314,13 +314,13 @@ export const QuizSummary: React.FC<QuizSummaryProps> = ({
         )}
 
         {/* Action Buttons */}
-        <div className="flex items-center justify-center flex-wrap gap-3 mt-8 pt-4 border-t border-stone-200 print:hidden">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2.5 sm:gap-3 mt-6 sm:mt-8 pt-4 border-t border-stone-200 print:hidden">
           <button
             onClick={() => {
               soundManager.playClick();
               onRestart();
             }}
-            className="px-5 py-2.5 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+            className="min-h-[48px] px-5 py-3 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer active:scale-98"
           >
             <RotateCcw className="w-4 h-4" />
             Configurar Nova Rodada / Gincana
@@ -332,16 +332,16 @@ export const QuizSummary: React.FC<QuizSummaryProps> = ({
                 soundManager.playClick();
                 onReviewMistakesOnly(mistakeIds);
               }}
-              className="px-5 py-2.5 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs sm:text-sm flex items-center gap-2 shadow-xs transition-colors cursor-pointer"
+              className="min-h-[48px] px-5 py-3 rounded-xl bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs sm:text-sm flex items-center justify-center gap-2 shadow-xs transition-colors cursor-pointer active:scale-98"
             >
               <Award className="w-4 h-4" />
-              Treinar Apenas as {mistakeIds.length} Questões Erradas
+              Treinar as {mistakeIds.length} Questões Erradas
             </button>
           )}
 
           <button
             onClick={handlePrint}
-            className="px-4 py-2.5 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 text-stone-800 font-semibold text-xs sm:text-sm flex items-center gap-1.5 transition-colors cursor-pointer"
+            className="min-h-[48px] px-4 py-3 rounded-xl border border-stone-300 bg-white hover:bg-stone-50 active:bg-stone-100 text-stone-800 font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
           >
             <Printer className="w-4 h-4 text-stone-600" />
             Imprimir Relatório

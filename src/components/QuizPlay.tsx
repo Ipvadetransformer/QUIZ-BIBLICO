@@ -266,21 +266,21 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
 
   return (
     <div
-      className="max-w-3xl mx-auto px-4 py-6 sm:py-10 space-y-5"
+      className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-5 pb-16 sm:pb-8"
       style={{ fontSize: `${fontScale}rem` }}
     >
       {/* Progressive Difficulty Stage Announcement Bar */}
       {config.orderByDifficulty && (
-        <div className="flex items-center justify-between p-2.5 px-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 font-semibold shadow-2xs">
-          <div className="flex items-center gap-2">
-            <Layers className="w-4 h-4 text-amber-700" />
-            <span>Etapa Atual:</span>
+        <div className="flex items-center justify-between p-2 sm:p-2.5 px-3 sm:px-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 font-semibold shadow-2xs">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <Layers className="w-4 h-4 text-amber-700 shrink-0" />
+            <span className="hidden xs:inline">Etapa:</span>
             <span className={`px-2 py-0.5 rounded-md border font-bold ${difficultyMeta.bg}`}>
               {difficultyMeta.icon} {difficultyMeta.label}
             </span>
           </div>
 
-          <span className="text-[11px] text-stone-700 hidden sm:inline">
+          <span className="text-[11px] text-stone-600 hidden sm:inline">
             Ordem: Fácil ➔ Médio ➔ Difícil
           </span>
         </div>
@@ -288,31 +288,31 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
 
       {/* TEAM MODE SCOREBOARD & CURRENT TURN BANNER */}
       {config.mode === 'equipes' && (
-        <div className="bg-white rounded-2xl border border-stone-200 p-4 shadow-xs space-y-3">
+        <div className="bg-white rounded-2xl border border-stone-200 p-3 sm:p-4 shadow-xs space-y-2.5 sm:space-y-3">
           {/* Active Turn Highlight */}
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-stone-100 pb-3">
-            <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-stone-700 uppercase tracking-wider">
+          <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-1.5 sm:gap-2 border-b border-stone-100 pb-2.5 sm:pb-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="text-[11px] sm:text-xs font-bold text-stone-600 uppercase tracking-wider">
                 Vez de Responder:
               </span>
               <div
-                className={`px-3 py-1 rounded-lg border font-bold text-sm flex items-center gap-2 shadow-2xs ${currentTeamStyle.bgLight} ${currentTeamStyle.textDark} ${currentTeamStyle.border} ring-2 ${currentTeamStyle.ring}`}
+                className={`px-2.5 py-1 rounded-lg border font-bold text-xs sm:text-sm flex items-center gap-1.5 shadow-2xs ${currentTeamStyle.bgLight} ${currentTeamStyle.textDark} ${currentTeamStyle.border} ring-2 ${currentTeamStyle.ring}`}
               >
                 <span className={`w-2.5 h-2.5 rounded-full ${currentTeamStyle.dot} animate-pulse`} />
-                <span>{currentTeam.name}</span>
+                <span className="truncate max-w-[140px] sm:max-w-[200px]">{currentTeam.name}</span>
               </div>
             </div>
 
             {/* Next Team Teaser */}
-            <div className="text-xs text-stone-700 flex items-center gap-1">
+            <div className="text-[11px] sm:text-xs text-stone-600 flex items-center gap-1">
               <span>A seguir:</span>
-              <strong className="text-stone-800">{nextTeam.name}</strong>
+              <strong className="text-stone-800 truncate max-w-[100px] sm:max-w-[140px]">{nextTeam.name}</strong>
             </div>
           </div>
 
-          {/* Live Placar across all teams */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-2 pt-1">
-            {activeTeams.map((team, idx) => {
+          {/* Live Placar across all teams with horizontal scroll safeguard on mobile */}
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1.5 sm:gap-2 pt-0.5">
+            {activeTeams.map((team) => {
               const isTurn = team.id === currentTeam.id;
               const style = getTeamStyle(team.color);
               const score = teamScores[team.id] || 0;
@@ -323,18 +323,18 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
                   className={`p-2 rounded-xl border text-center transition-all ${
                     isTurn
                       ? `${style.bgLight} ${style.border} ring-2 ${style.ring} shadow-xs font-bold`
-                      : 'bg-stone-50/60 border-stone-200 text-stone-700'
+                      : 'bg-stone-50/70 border-stone-200 text-stone-700'
                   }`}
                 >
                   <div className="flex items-center justify-center gap-1 mb-0.5">
-                    <span className={`w-2 h-2 rounded-full ${style.dot}`} />
-                    <span className="text-[11px] truncate max-w-[90px]" title={team.name}>
+                    <span className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`} />
+                    <span className="text-[10px] sm:text-[11px] truncate max-w-[80px] sm:max-w-[90px]" title={team.name}>
                       {team.name}
                     </span>
                   </div>
-                  <div className="text-lg font-extrabold font-display leading-tight text-stone-900">
+                  <div className="text-base sm:text-lg font-extrabold font-display leading-tight text-stone-900">
                     {score}{' '}
-                    <span className="text-[10px] font-normal text-stone-700">pts</span>
+                    <span className="text-[10px] font-normal text-stone-600">pts</span>
                   </div>
                 </div>
               );
@@ -344,38 +344,38 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
       )}
 
       {/* Top Header bar with question progress & accessibility */}
-      <div className="flex items-center justify-between gap-4 text-xs font-semibold text-stone-700">
+      <div className="flex items-center justify-between gap-2 sm:gap-4 text-xs font-semibold text-stone-700">
         {/* Progress Text */}
-        <div className="flex items-center gap-2">
-          <span className="px-2.5 py-1 rounded-md bg-stone-200/80 text-stone-800 font-bold">
+        <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+          <span className="px-2.5 py-1 rounded-md bg-stone-200/80 text-stone-800 font-bold text-[11px] sm:text-xs">
             Pergunta {currentIndex + 1} de {questions.length}
           </span>
           {!config.orderByDifficulty && (
-            <span className={`px-2 py-0.5 rounded-md border text-[11px] font-bold ${difficultyMeta.bg}`}>
+            <span className={`px-2 py-0.5 rounded-md border text-[10px] sm:text-[11px] font-bold ${difficultyMeta.bg}`}>
               {difficultyMeta.icon} {difficultyMeta.label}
             </span>
           )}
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2 sm:gap-3">
           {/* Streak indicator if not in teams mode */}
           {config.mode !== 'equipes' && streak > 1 && (
-            <div className="flex items-center gap-1 text-amber-700 bg-amber-100/90 px-2.5 py-1 rounded-full border border-amber-300 font-bold animate-bounce">
-              <Flame className="w-3.5 h-3.5 fill-amber-500" />
+            <div className="flex items-center gap-1 text-amber-800 bg-amber-100/90 px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border border-amber-300 font-bold text-[10px] sm:text-xs animate-bounce">
+              <Flame className="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-amber-500 shrink-0" />
               <span>{streak} seguidas!</span>
             </div>
           )}
 
-          {/* Read aloud button */}
+          {/* Read aloud button - 44px touch target on mobile */}
           <button
             onClick={handleReadAloud}
-            className={`p-1.5 rounded-lg border text-stone-600 hover:text-amber-800 hover:bg-amber-100/50 transition-colors cursor-pointer ${
-              isSpeaking ? 'bg-amber-200 text-amber-900 border-amber-400' : 'border-stone-200'
+            className={`min-h-[44px] min-w-[44px] p-2 rounded-xl border flex items-center justify-center text-stone-600 hover:text-amber-800 hover:bg-amber-100/50 active:bg-amber-200 transition-colors cursor-pointer ${
+              isSpeaking ? 'bg-amber-200 text-amber-900 border-amber-400' : 'border-stone-200 bg-white/80'
             }`}
             title="Ouvir a pergunta em voz alta"
             aria-label="Ouvir pergunta em áudio"
           >
-            <Volume2 className="w-4 h-4" />
+            <Volume2 className="w-4 h-4 sm:w-4 sm:h-4" />
           </button>
         </div>
       </div>
@@ -390,11 +390,11 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
 
       {/* Timer display if enabled */}
       {config.timerLimitSeconds > 0 && (
-        <div className="flex items-center justify-between px-3 py-1.5 rounded-lg bg-stone-100 border border-stone-200 text-xs">
+        <div className="flex items-center justify-between px-3 py-2 rounded-xl bg-stone-100 border border-stone-200 text-xs">
           <span className="text-stone-600 font-medium">Tempo Restante:</span>
           <span
             className={`font-mono font-bold ${
-              timeLeft <= 10 ? 'text-rose-600 animate-pulse text-sm' : 'text-stone-800'
+              timeLeft <= 10 ? 'text-rose-600 animate-pulse text-sm sm:text-base' : 'text-stone-800'
             }`}
           >
             {timeLeft >= 60
@@ -405,20 +405,20 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
       )}
 
       {/* Primary Question Card */}
-      <div className="bg-white rounded-2xl border border-amber-200/90 p-5 sm:p-8 shadow-xs space-y-6">
+      <div className="bg-white rounded-2xl border border-amber-200/90 p-4 sm:p-7 md:p-8 shadow-xs space-y-4 sm:space-y-6">
         {/* Question Origin & Points Value Tag */}
-        <div className="flex items-center justify-between flex-wrap gap-2 text-xs border-b border-stone-100 pb-3">
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-amber-800 bg-amber-50 px-2.5 py-0.5 rounded-md border border-amber-200">
+        <div className="flex items-center justify-between flex-wrap gap-2 text-xs border-b border-stone-100 pb-2.5 sm:pb-3">
+          <div className="flex items-center gap-1.5 sm:gap-2 flex-wrap">
+            <span className="font-bold text-amber-900 bg-amber-50 px-2 sm:px-2.5 py-0.5 rounded-md border border-amber-200 text-[11px] sm:text-xs">
               {currentQuestion.themeName}
             </span>
             <span
-              className={`px-2 py-0.5 rounded-md border font-bold text-[11px] shadow-2xs ${difficultyMeta.bg}`}
+              className={`px-2 py-0.5 rounded-md border font-bold text-[10px] sm:text-[11px] shadow-2xs ${difficultyMeta.bg}`}
             >
               {difficultyMeta.icon} {difficultyMeta.label} ({questionPoints === 1 ? '1 ponto' : `${questionPoints} pontos`})
             </span>
           </div>
-          <span className="text-stone-600 font-medium text-[11px]">
+          <span className="text-stone-500 font-medium text-[10px] sm:text-[11px]">
             Origem: {currentQuestion.sourceDocument}
           </span>
         </div>
@@ -426,7 +426,7 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
         {/* Question Text with active team callout in team mode */}
         <div className="space-y-2">
           {config.mode === 'equipes' && (
-            <div className="text-xs font-bold text-stone-700 flex items-center gap-1.5">
+            <div className="text-xs font-bold text-stone-700 flex items-center gap-1.5 flex-wrap">
               <span>Pergunta destinada para:</span>
               <span className={`px-2 py-0.5 rounded-md ${currentTeamStyle.badgeBg} ${currentTeamStyle.badgeText} font-bold`}>
                 {currentTeam.name}
@@ -436,17 +436,17 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
 
           <h2
             id={questionHeadingId}
-            className="text-xl sm:text-2xl font-bold text-stone-900 leading-snug font-display tracking-tight"
+            className="text-lg sm:text-xl md:text-2xl font-bold text-stone-900 leading-snug sm:leading-snug font-display tracking-tight"
           >
             {currentQuestion.text}
           </h2>
         </div>
 
-        {/* Options List */}
+        {/* Options List with comfortable mobile touch target (min-h-[52px] and py-3.5) */}
         <div
           role="radiogroup"
           aria-labelledby={questionHeadingId}
-          className="space-y-3 pt-2"
+          className="space-y-2.5 sm:space-y-3 pt-1 sm:pt-2"
         >
           {currentQuestion.options.map((option) => {
             const isSelected = selectedKey === option.key;
@@ -454,7 +454,7 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
 
             // Compute option visual style
             let cardStyle =
-              'border-stone-200 hover:border-amber-400 hover:bg-amber-50/50 bg-stone-50/40 text-stone-800';
+              'border-stone-200 hover:border-amber-400 hover:bg-amber-50/50 active:bg-amber-100/50 bg-stone-50/40 text-stone-800';
             let badgeStyle = 'bg-stone-200 text-stone-700';
 
             if (hasAnswered) {
@@ -483,23 +483,23 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
                 aria-checked={isSelected}
                 disabled={hasAnswered}
                 onClick={() => handleAnswer(option.key)}
-                className={`w-full p-4 rounded-xl border text-left flex items-start gap-3.5 transition-all cursor-pointer disabled:cursor-default ${cardStyle}`}
+                className={`w-full min-h-[52px] p-3 sm:p-4 rounded-xl border text-left flex items-start sm:items-center gap-3 transition-all cursor-pointer disabled:cursor-default active:scale-[0.99] ${cardStyle}`}
               >
                 {/* Letter Key Pill */}
                 <span
-                  className={`w-7 h-7 rounded-lg flex items-center justify-center text-xs font-bold shrink-0 mt-0.5 transition-colors ${badgeStyle}`}
+                  className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center text-xs sm:text-sm font-bold shrink-0 mt-0.5 sm:mt-0 transition-colors ${badgeStyle}`}
                 >
                   {option.key}
                 </span>
 
                 {/* Option Text */}
-                <span className="text-sm sm:text-base leading-relaxed flex-1">
+                <span className="text-sm sm:text-base leading-relaxed flex-1 pt-0.5 sm:pt-0">
                   {option.text}
                 </span>
 
                 {/* Icon indicator after answer */}
                 {hasAnswered && (
-                  <span className="shrink-0 mt-0.5">
+                  <span className="shrink-0 mt-0.5 sm:mt-0">
                     {isCorrectAnswer ? (
                       <CheckCircle2 className="w-5 h-5 text-emerald-600" />
                     ) : isSelected ? (
@@ -519,37 +519,37 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
             tabIndex={-1}
             role="region"
             aria-label="Explicação e Referência Bíblica"
-            className={`mt-6 p-4 sm:p-5 rounded-xl border transition-all ${
+            className={`mt-4 sm:mt-6 p-3.5 sm:p-5 rounded-xl border transition-all ${
               selectedKey === currentQuestion.correctKey
                 ? 'bg-emerald-50/80 border-emerald-200 text-emerald-950'
                 : 'bg-amber-50/80 border-amber-200 text-stone-900'
             }`}
           >
-            <div className="flex items-start gap-3">
+            <div className="flex items-start gap-2.5 sm:gap-3">
               <div
-                className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
+                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg flex items-center justify-center shrink-0 mt-0.5 ${
                   selectedKey === currentQuestion.correctKey
                     ? 'bg-emerald-600 text-white'
                     : 'bg-amber-600 text-white'
                 }`}
               >
                 {selectedKey === currentQuestion.correctKey ? (
-                  <CheckCircle2 className="w-5 h-5" />
+                  <CheckCircle2 className="w-4 h-4 sm:w-5 sm:h-5" />
                 ) : (
-                  <HelpCircle className="w-5 h-5" />
+                  <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                 )}
               </div>
-              <div className="space-y-2 flex-1">
-                <div className="flex items-center justify-between flex-wrap gap-2">
-                  <span className="font-bold text-sm">
+              <div className="space-y-1.5 sm:space-y-2 flex-1 min-w-0">
+                <div className="flex items-center justify-between flex-wrap gap-1.5">
+                  <span className="font-bold text-xs sm:text-sm">
                     {selectedKey === currentQuestion.correctKey
                       ? config.mode === 'equipes'
-                        ? `+${questionPoints} ${questionPoints === 1 ? 'ponto' : 'pontos'} para ${currentTeam.name}! Resposta Correta!`
+                        ? `+${questionPoints} ${questionPoints === 1 ? 'ponto' : 'pontos'} para ${currentTeam.name}! Correto!`
                         : `Resposta Correta! +${questionPoints} ${questionPoints === 1 ? 'ponto' : 'pontos'}!`
-                      : `A resposta correta é a Letra ${currentQuestion.correctKey}`}
+                      : `Resposta correta: Letra ${currentQuestion.correctKey}`}
                   </span>
-                  <span className="inline-flex items-center gap-1 text-xs font-bold px-2.5 py-0.5 rounded-full bg-white border border-stone-300 text-stone-800 shadow-2xs">
-                    <BookOpen className="w-3 h-3 text-amber-700" />
+                  <span className="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold px-2 py-0.5 rounded-full bg-white border border-stone-300 text-stone-800 shadow-2xs">
+                    <BookOpen className="w-3 h-3 text-amber-700 shrink-0" />
                     Base: {currentQuestion.biblicalReference}
                   </span>
                 </div>
@@ -559,10 +559,10 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
               </div>
             </div>
 
-            {/* Next Action Button */}
-            <div className="mt-5 pt-3 border-t border-stone-200/80 flex items-center justify-between">
+            {/* Next Action Button - full width on mobile, comfortable touch target */}
+            <div className="mt-4 sm:mt-5 pt-3 border-t border-stone-200/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
               {config.mode === 'equipes' ? (
-                <span className="text-xs text-stone-700 font-semibold">
+                <span className="text-xs text-stone-700 font-semibold text-center sm:text-left">
                   Próxima pergunta será para: <strong>{nextTeam.name}</strong>
                 </span>
               ) : (
@@ -572,7 +572,7 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
               <button
                 type="button"
                 onClick={handleNext}
-                className="px-6 py-2.5 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-sm shadow-xs hover:shadow-md transition-all flex items-center gap-2 active:scale-98 cursor-pointer"
+                className="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-sm shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 active:scale-98 cursor-pointer"
               >
                 <span>
                   {currentIndex + 1 < questions.length

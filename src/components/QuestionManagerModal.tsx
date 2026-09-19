@@ -308,23 +308,23 @@ export const QuestionManagerModal: React.FC<QuestionManagerModalProps> = ({
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex border-b border-stone-200 bg-stone-50/70 px-4 sm:px-6 gap-2">
+        <div className="flex border-b border-stone-200 bg-stone-50/70 px-3 sm:px-6 gap-1 sm:gap-2 overflow-x-auto scrollbar-none">
           <button
             onClick={() => {
               soundManager.playClick();
               setActiveTab('upload');
             }}
-            className={`py-3 px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 cursor-pointer ${
+            className={`py-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0 min-h-[44px] ${
               activeTab === 'upload'
                 ? 'border-amber-600 text-amber-900 bg-white shadow-2xs rounded-t-lg'
                 : 'border-transparent text-stone-600 hover:text-stone-900'
             }`}
           >
-            <Upload className="w-4 h-4 text-amber-600" />
-            Upload de Arquivo (.txt / .pdf)
+            <Upload className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Upload (.txt / .pdf)</span>
             {previewList.length > 0 && (
               <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-600 text-white font-bold">
-                {previewList.length} no preview
+                {previewList.length}
               </span>
             )}
           </button>
@@ -334,14 +334,14 @@ export const QuestionManagerModal: React.FC<QuestionManagerModalProps> = ({
               soundManager.playClick();
               setActiveTab('manage');
             }}
-            className={`py-3 px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 cursor-pointer ${
+            className={`py-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0 min-h-[44px] ${
               activeTab === 'manage'
                 ? 'border-amber-600 text-amber-900 bg-white shadow-2xs rounded-t-lg'
                 : 'border-transparent text-stone-600 hover:text-stone-900'
             }`}
           >
-            <BookOpen className="w-4 h-4 text-amber-600" />
-            Perguntas Salvas ({customQuestions.length})
+            <BookOpen className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Salvas ({customQuestions.length})</span>
           </button>
 
           <button
@@ -349,14 +349,14 @@ export const QuestionManagerModal: React.FC<QuestionManagerModalProps> = ({
               soundManager.playClick();
               setActiveTab('create');
             }}
-            className={`py-3 px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-2 cursor-pointer ${
+            className={`py-3 px-3 sm:px-4 text-xs font-bold border-b-2 transition-colors flex items-center gap-1.5 sm:gap-2 cursor-pointer shrink-0 min-h-[44px] ${
               activeTab === 'create'
                 ? 'border-amber-600 text-amber-900 bg-white shadow-2xs rounded-t-lg'
                 : 'border-transparent text-stone-600 hover:text-stone-900'
             }`}
           >
-            <Plus className="w-4 h-4 text-amber-600" />
-            Criar Manualmente
+            <Plus className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Criar Manual</span>
           </button>
         </div>
 
