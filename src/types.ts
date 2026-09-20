@@ -2,7 +2,7 @@ export type Difficulty = 'facil' | 'medio' | 'dificil';
 
 export type ThemeId = 'paulinas' | 'catecumenos' | 'ebd2025' | 'ebdAdultos' | 'todas';
 
-export type GameMode = 'classico' | 'estudo' | 'equipes';
+export type GameMode = 'classico' | 'estudo' | 'equipes' | 'matamata' | 'personalizado';
 
 export interface QuestionOption {
   key: 'A' | 'B' | 'C' | 'D' | 'E';
@@ -40,6 +40,9 @@ export interface AnswerRecord {
   team?: 'teamA' | 'teamB';
   pointsEarned?: number;
   questionDifficulty?: Difficulty;
+  mataMataKnockout?: boolean;
+  mataMataWinnerName?: string;
+  mataMataWinnerTeamId?: string;
 }
 
 export interface QuizConfig {
@@ -55,5 +58,6 @@ export interface QuizConfig {
   equalQuestionsPerTeam?: boolean;
   teamAName?: string;
   teamBName?: string;
+  selectedQuestionIds?: string[];
 }
 

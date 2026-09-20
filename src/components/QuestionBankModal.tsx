@@ -225,7 +225,12 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
                   </button>
                 </div>
 
-                <p className="text-sm font-bold text-stone-900 leading-snug">{q.text}</p>
+                <p
+                  style={{ fontSize: `${0.875 * fontScale}rem`, lineHeight: 1.35 }}
+                  className="font-bold text-stone-900 leading-snug transition-all duration-150"
+                >
+                  {q.text}
+                </p>
 
                 {/* Options */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs">

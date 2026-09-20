@@ -13,7 +13,8 @@ import {
   Layers,
   Clock,
   Play,
-  Pause
+  Pause,
+  Zap
 } from 'lucide-react';
 import { Question, AnswerRecord, QuizConfig, TeamConfig } from '../types';
 import { soundManager } from '../utils/audio';
@@ -41,6 +42,10 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
   const [timeLeft, setTimeLeft] = useState<number>(config.timerLimitSeconds);
   const [isTimerPaused, setIsTimerPaused] = useState<boolean>(false);
   const [isSpeaking, setIsSpeaking] = useState<boolean>(false);
+
+  // Mata-Mata elimination state
+  const [mataMataWinner, setMataMataWinner] = useState<TeamConfig | null>(null);
+  const [mataMataEliminatedTeam, setMataMataEliminatedTeam] = useState<TeamConfig | null>(null);
 
   // Teams configuration
   const activeTeams: TeamConfig[] =
@@ -132,8 +137,32 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
 
       const pointsEarned = isCorrect ? getQuestionPoints(currentQuestion.difficulty) : 0;
 
+      let mataMataKnockout = false;
+      let mataMataWinnerName: string | undefined = undefined;
+      let mataMataWinnerTeamId: string | undefined = undefined;
+
       // Sound & Feedback
-      if (isCorrect) {
+      if (config.mode === 'matamata') {
+        if (isCorrect) {
+          soundManager.playCorrect();
+          setTeamScores((prev) => ({
+            ...prev,
+            [currentTeam.id]: (prev[currentTeam.id] || 0) + 1,
+          }));
+        } else {
+          // Errou ou tempo zerou no Mata-Mata: Vitória imediata do adversário!
+          soundManager.playIncorrect();
+          const opponent = activeTeams.find((t) => t.id !== currentTeam.id) || nextTeam;
+          mataMataKnockout = true;
+          mataMataWinnerName = opponent.name;
+          mataMataWinnerTeamId = opponent.id;
+          setMataMataEliminatedTeam(currentTeam);
+          setMataMataWinner(opponent);
+          setTimeout(() => {
+            soundManager.playCelebration();
+          }, 250);
+        }
+      } else if (isCorrect) {
         soundManager.playCorrect();
         setStreak((prev) => {
           const next = prev + 1;
@@ -144,7 +173,7 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
           return next;
         });
 
-        if (config.mode === 'equipes') {
+        if (config.mode === 'equipes' || (config.mode === 'personalizado' && activeTeams.length > 1)) {
           setTeamScores((prev) => ({
             ...prev,
             [currentTeam.id]: (prev[currentTeam.id] || 0) + pointsEarned,
@@ -161,11 +190,14 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
         selectedKey: key || ('A' as const),
         isCorrect,
         timeSpentSeconds: timeSpent,
-        teamId: config.mode === 'equipes' ? currentTeam.id : undefined,
-        teamName: config.mode === 'equipes' ? currentTeam.name : undefined,
+        teamId: (config.mode === 'equipes' || config.mode === 'matamata' || (config.mode === 'personalizado' && activeTeams.length > 1)) ? currentTeam.id : undefined,
+        teamName: (config.mode === 'equipes' || config.mode === 'matamata' || (config.mode === 'personalizado' && activeTeams.length > 1)) ? currentTeam.name : undefined,
         team: currentTeamIndex === 0 ? 'teamA' : 'teamB',
         pointsEarned,
         questionDifficulty: currentQuestion.difficulty,
+        mataMataKnockout,
+        mataMataWinnerName,
+        mataMataWinnerTeamId,
       };
 
       setRecords((prev) => [...prev, newRecord]);
@@ -179,12 +211,19 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
       config.mode,
       currentTeam,
       currentTeamIndex,
+      activeTeams,
+      nextTeam,
     ]
   );
 
   // Next Question or Finish
   const handleNext = () => {
     soundManager.playClick();
+    if (config.mode === 'matamata' && mataMataWinner) {
+      soundManager.playCelebration();
+      onFinishQuiz(records);
+      return;
+    }
     if (currentIndex + 1 < questions.length) {
       setCurrentIndex((prev) => prev + 1);
     } else {
@@ -295,8 +334,70 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
         </div>
       )}
 
+      {/* MATA-MATA DUEL SCOREBOARD & TURN BANNER */}
+      {config.mode === 'matamata' && (
+        <div className="bg-linear-to-r from-rose-950 via-stone-900 to-amber-950 rounded-2xl border-2 border-rose-500/80 p-3.5 sm:p-5 text-white shadow-md space-y-3">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 border-b border-rose-500/30 pb-3">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span className="px-2.5 py-1 rounded-md bg-rose-600 text-white font-extrabold text-[11px] uppercase tracking-wider flex items-center gap-1 shadow-xs animate-pulse">
+                <Zap className="w-3.5 h-3.5" />
+                MATA-MATA (MORTE SÚBITA)
+              </span>
+              <span className="text-xs text-rose-200 font-semibold">
+                Perguntas Difíceis
+              </span>
+            </div>
+            <div className="text-[11px] sm:text-xs text-amber-300 font-bold bg-amber-400/10 px-2.5 py-1 rounded-lg border border-amber-400/20">
+              ⚡ Regra: Errou, o adversário vence! Acertou, passa a vez.
+            </div>
+          </div>
+
+          <div className="flex flex-col xs:flex-row items-stretch xs:items-center justify-between gap-3">
+            {/* Active Turn Team */}
+            <div className="flex items-center gap-2.5">
+              <span className="text-xs text-stone-300 font-semibold uppercase tracking-wider">
+                Vez de responder:
+              </span>
+              <div className="px-3.5 py-1.5 rounded-xl bg-amber-500 text-stone-950 font-black text-sm sm:text-base flex items-center gap-2 shadow-md ring-2 ring-amber-300">
+                <span className="w-3 h-3 rounded-full bg-rose-600 animate-ping" />
+                <span>{currentTeam.name}</span>
+              </div>
+            </div>
+
+            {/* Adversary waiting */}
+            <div className="text-xs text-stone-300 flex items-center gap-1.5 bg-white/5 px-3 py-1.5 rounded-xl border border-white/10">
+              <span className="text-stone-400">Adversário aguardando:</span>
+              <strong className="text-amber-200 font-bold">{nextTeam.name}</strong>
+            </div>
+          </div>
+
+          {/* Duelo Placar */}
+          <div className="grid grid-cols-2 gap-2.5 pt-1">
+            {activeTeams.slice(0, 2).map((team) => {
+              const isTurn = team.id === currentTeam.id;
+              const score = teamScores[team.id] || 0;
+              return (
+                <div
+                  key={team.id}
+                  className={`p-2.5 rounded-xl border text-center transition-all ${
+                    isTurn
+                      ? 'bg-rose-900/60 border-rose-400 ring-2 ring-rose-400/40 shadow-sm'
+                      : 'bg-black/30 border-white/10 text-stone-300'
+                  }`}
+                >
+                  <div className="text-xs font-bold truncate text-white">{team.name}</div>
+                  <div className="text-xl sm:text-2xl font-black text-amber-300 font-display">
+                    {score} <span className="text-xs font-normal text-stone-300">acertos</span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* TEAM MODE SCOREBOARD & CURRENT TURN BANNER */}
-      {config.mode === 'equipes' && (
+      {(config.mode === 'equipes' || (config.mode === 'personalizado' && activeTeams.length > 1)) && (
         <div className="bg-white rounded-2xl border border-stone-200 p-3 sm:p-4 shadow-xs space-y-2.5 sm:space-y-3">
           {/* Active Turn Highlight */}
           <div className="flex flex-col xs:flex-row items-start xs:items-center justify-between gap-1.5 sm:gap-2 border-b border-stone-100 pb-2.5 sm:pb-3">
@@ -490,7 +591,11 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
 
           <h2
             id={questionHeadingId}
-            className="text-lg sm:text-xl md:text-2xl font-bold text-stone-900 leading-snug sm:leading-snug font-display tracking-tight"
+            style={{
+              fontSize: `${1.25 * fontScale}rem`,
+              lineHeight: 1.35,
+            }}
+            className="font-bold text-stone-900 font-display tracking-tight transition-all duration-150"
           >
             {currentQuestion.text}
           </h2>
@@ -547,7 +652,13 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
                 </span>
 
                 {/* Option Text */}
-                <span className="text-sm sm:text-base leading-relaxed flex-1 pt-0.5 sm:pt-0">
+                <span
+                  style={{
+                    fontSize: `${1.0 * fontScale}rem`,
+                    lineHeight: 1.4,
+                  }}
+                  className="leading-relaxed flex-1 pt-0.5 sm:pt-0 transition-all duration-150"
+                >
                   {option.text}
                 </span>
 
@@ -607,35 +718,91 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
                     Base: {currentQuestion.biblicalReference}
                   </span>
                 </div>
-                <p className="text-xs sm:text-sm text-stone-700 leading-relaxed">
+                <p
+                  style={{
+                    fontSize: `${0.9 * fontScale}rem`,
+                    lineHeight: 1.5,
+                  }}
+                  className="text-stone-700 leading-relaxed transition-all duration-150"
+                >
                   {currentQuestion.explanation}
                 </p>
               </div>
             </div>
 
-            {/* Next Action Button - full width on mobile, comfortable touch target */}
-            <div className="mt-4 sm:mt-5 pt-3 border-t border-stone-200/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-              {config.mode === 'equipes' ? (
-                <span className="text-xs text-stone-700 font-semibold text-center sm:text-left">
-                  Próxima pergunta será para: <strong>{nextTeam.name}</strong>
-                </span>
-              ) : (
-                <span />
-              )}
+            {/* Next Action Button / Mata-Mata Knockout Resolution */}
+            {config.mode === 'matamata' && mataMataWinner ? (
+              <div className="mt-4 sm:mt-5 pt-4 border-t-2 border-rose-300 space-y-4">
+                <div className="p-4 sm:p-5 rounded-2xl bg-linear-to-r from-rose-950 via-rose-900 to-amber-950 text-white border-2 border-rose-400/80 shadow-lg text-center space-y-2">
+                  <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/30 border border-rose-300 text-rose-200 text-xs font-black uppercase tracking-wider animate-pulse">
+                    <Zap className="w-3.5 h-3.5 text-rose-300" />
+                    Mata-Mata Encerrado • Morte Súbita!
+                  </div>
+                  <h3 className="text-xl sm:text-2xl font-black font-display text-rose-100">
+                    ❌ {mataMataEliminatedTeam?.name} Errou!
+                  </h3>
+                  <p className="text-sm sm:text-base text-amber-300 font-bold">
+                    Pela regra do Mata-Mata, a vitória é imediata do adversário:
+                  </p>
+                  <div className="text-2xl sm:text-3xl font-black text-white font-display py-1">
+                    🏆 {mataMataWinner.name} É O GRANDE CAMPEÃO! 🏆
+                  </div>
+                </div>
 
-              <button
-                type="button"
-                onClick={handleNext}
-                className="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-sm shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 active:scale-98 cursor-pointer"
-              >
-                <span>
-                  {currentIndex + 1 < questions.length
-                    ? 'Próxima Pergunta'
-                    : 'Ver Resultado Final'}
+                <div className="flex justify-center">
+                  <button
+                    type="button"
+                    onClick={handleNext}
+                    className="w-full sm:w-auto min-h-[50px] px-8 py-3.5 rounded-xl bg-linear-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-stone-950 font-black text-sm sm:text-base shadow-lg transition-all flex items-center justify-center gap-2 active:scale-98 cursor-pointer"
+                  >
+                    <Trophy className="w-5 h-5 text-stone-950" />
+                    <span>Ver Pódio & Placar Final</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            ) : config.mode === 'matamata' ? (
+              <div className="mt-4 sm:mt-5 pt-3 border-t border-emerald-200 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                <span className="text-xs sm:text-sm font-bold text-emerald-900 flex items-center gap-1.5">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" />
+                  <span>
+                    {currentTeam.name} acertou e sobreviveu! Passando a pergunta difícil para: <strong>{nextTeam.name}</strong>
+                  </span>
                 </span>
-                <ArrowRight className="w-4 h-4" />
-              </button>
-            </div>
+
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-sm shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 active:scale-98 cursor-pointer"
+                >
+                  <span>Passar Vez para {nextTeam.name}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="mt-4 sm:mt-5 pt-3 border-t border-stone-200/80 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
+                {config.mode === 'equipes' || (config.mode === 'personalizado' && activeTeams.length > 1) ? (
+                  <span className="text-xs text-stone-700 font-semibold text-center sm:text-left">
+                    Próxima pergunta será para: <strong>{nextTeam.name}</strong>
+                  </span>
+                ) : (
+                  <span />
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleNext}
+                  className="w-full sm:w-auto min-h-[48px] px-6 py-3 rounded-xl bg-amber-800 hover:bg-amber-900 text-white font-bold text-sm shadow-xs hover:shadow-md transition-all flex items-center justify-center gap-2 active:scale-98 cursor-pointer"
+                >
+                  <span>
+                    {currentIndex + 1 < questions.length
+                      ? 'Próxima Pergunta'
+                      : 'Ver Resultado Final'}
+                  </span>
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -141,6 +141,7 @@ export default function App() {
           <QuizSetup
             onStartQuiz={handleStartQuiz}
             totalQuestionsAvailable={allAvailableQuestions.length}
+            allQuestions={allAvailableQuestions}
             onOpenQuestionManager={() => setIsQuestionManagerOpen(true)}
             customQuestionsCount={customQuestions.length}
           />

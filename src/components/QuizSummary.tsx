@@ -13,7 +13,8 @@ import {
   Award,
   ChevronDown,
   ChevronUp,
-  Medal
+  Medal,
+  Zap
 } from 'lucide-react';
 import { Question, AnswerRecord, QuizConfig, TeamConfig } from '../types';
 import { soundManager } from '../utils/audio';
@@ -119,6 +120,16 @@ export const QuizSummary: React.FC<QuizSummaryProps> = ({
   const winners = sortedTeams.filter((t) => t.points === highestScore && highestScore > 0);
   const isTie = winners.length > 1;
 
+  // Mata-Mata resolution
+  const mataMataRecord = records.find((r) => r.mataMataKnockout);
+  const mataMataWinnerId = mataMataRecord?.mataMataWinnerTeamId;
+  const mataMataWinnerTeam = mataMataWinnerId
+    ? activeTeams.find((t) => t.id === mataMataWinnerId)
+    : sortedTeams[0]?.team;
+  const mataMataLoserTeam = mataMataRecord?.teamId
+    ? activeTeams.find((t) => t.id === mataMataRecord.teamId)
+    : activeTeams.find((t) => t.id !== mataMataWinnerTeam?.id);
+
   const getBiblicalPraise = () => {
     if (percent === 100) {
       return {
@@ -182,14 +193,25 @@ export const QuizSummary: React.FC<QuizSummaryProps> = ({
         </div>
 
         <div className="inline-block mb-3 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-xs font-bold uppercase tracking-wider">
-          {praise.badge}
+          {config.mode === 'matamata' ? '⚡ Vencedor da Morte Súbita' : praise.badge}
         </div>
 
         <h1 className="text-2xl sm:text-4xl font-extrabold text-stone-900 font-display">
-          {config.mode === 'equipes' && !isTie && winners.length === 1
+          {config.mode === 'matamata'
+            ? `⚡ ${mataMataWinnerTeam?.name || 'Equipe'} é o Grande Campeão do Mata-Mata!`
+            : config.mode === 'equipes' && !isTie && winners.length === 1
             ? `🏆 Parabéns, ${winners[0].team.name}! Campeã da Gincana!`
             : praise.title}
         </h1>
+
+        {config.mode === 'matamata' && mataMataLoserTeam && (
+          <div className="mt-2 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-100 text-rose-800 text-xs font-bold border border-rose-200">
+            <Zap className="w-3.5 h-3.5 text-rose-600 shrink-0" />
+            <span>
+              Decidido por Morte Súbita: <strong>{mataMataLoserTeam.name}</strong> errou uma pergunta difícil e a vitória foi do adversário!
+            </span>
+          </div>
+        )}
 
         <p className="mt-3 text-xs sm:text-sm text-stone-700 italic max-w-xl mx-auto leading-relaxed border-t border-b border-amber-100 py-3">
           {praise.verse}
@@ -459,7 +481,12 @@ export const QuizSummary: React.FC<QuizSummaryProps> = ({
                           </span>
                         )}
                       </div>
-                      <h3 className="text-sm font-bold text-stone-900">{q.text}</h3>
+                      <h3
+                        style={{ fontSize: `${0.9 * fontScale}rem`, lineHeight: 1.4 }}
+                        className="font-bold text-stone-900 transition-all duration-150"
+                      >
+                        {q.text}
+                      </h3>
                     </div>
                   </div>
 
@@ -481,7 +508,8 @@ export const QuizSummary: React.FC<QuizSummaryProps> = ({
                         return (
                           <div
                             key={opt.key}
-                            className={`p-2 rounded-lg border ${
+                            style={{ fontSize: `${0.825 * fontScale}rem` }}
+                            className={`p-2 rounded-lg border transition-all duration-150 ${
                               isCorrect
                                 ? 'border-emerald-300 bg-emerald-50 text-emerald-950 font-semibold'
                                 : isSelected && !isCorrect
@@ -501,7 +529,12 @@ export const QuizSummary: React.FC<QuizSummaryProps> = ({
                         <BookOpen className="w-3.5 h-3.5" />
                         <span>Referência: {q.biblicalReference}</span>
                       </div>
-                      <p className="text-stone-700 leading-relaxed text-[11px]">{q.explanation}</p>
+                      <p
+                        style={{ fontSize: `${0.75 * fontScale}rem` }}
+                        className="text-stone-700 leading-relaxed transition-all duration-150"
+                      >
+                        {q.explanation}
+                      </p>
                     </div>
                   </div>
                 )}

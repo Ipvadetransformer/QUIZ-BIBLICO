@@ -18,6 +18,31 @@ export function shuffleArray<T>(array: T[]): T[] {
  * team equal division, and shuffling.
  */
 export function prepareQuestions(config: QuizConfig, allQuestions: Question[]): Question[] {
+  // Mode: Seleção Personalizada de Perguntas
+  if (config.mode === 'personalizado' && config.selectedQuestionIds && config.selectedQuestionIds.length > 0) {
+    const idMap = new Map(allQuestions.map((q) => [q.id, q]));
+    let selected = config.selectedQuestionIds
+      .map((id) => idMap.get(id))
+      .filter((q): q is Question => Boolean(q));
+
+    if (config.shuffleQuestions) {
+      selected = shuffleArray(selected);
+    }
+    return selected;
+  }
+
+  // Mode: Mata-Mata (somente perguntas difíceis)
+  if (config.mode === 'matamata') {
+    let difficultPool = allQuestions.filter((q) => q.difficulty === 'dificil');
+    if (config.theme !== 'todas') {
+      const themeDifficult = difficultPool.filter((q) => q.theme === config.theme);
+      if (themeDifficult.length >= 4) {
+        difficultPool = themeDifficult;
+      }
+    }
+    return shuffleArray(difficultPool);
+  }
+
   // 1. Filter by theme if specified
   let pool = allQuestions.filter((q) => {
     return config.theme === 'todas' || q.theme === config.theme;
