@@ -266,7 +266,7 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
 
   return (
     <div
-      className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-8 space-y-4 sm:space-y-5 pb-16 sm:pb-8"
+      className="w-full max-w-5xl lg:max-w-6xl 2xl:max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 pb-16 sm:pb-8"
       style={{ fontSize: `${fontScale}rem` }}
     >
       {/* Progressive Difficulty Stage Announcement Bar */}
@@ -310,8 +310,8 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
             </div>
           </div>
 
-          {/* Live Placar across all teams with horizontal scroll safeguard on mobile */}
-          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-1.5 sm:gap-2 pt-0.5">
+          {/* Live Placar across all teams with horizontal scroll safeguard on mobile and spacious cards on desktop */}
+          <div className="grid grid-cols-2 xs:grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 sm:gap-3 pt-0.5">
             {activeTeams.map((team) => {
               const isTurn = team.id === currentTeam.id;
               const style = getTeamStyle(team.color);
@@ -320,21 +320,21 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
               return (
                 <div
                   key={team.id}
-                  className={`p-2 rounded-xl border text-center transition-all ${
+                  className={`p-2 sm:p-3 rounded-xl border text-center transition-all ${
                     isTurn
                       ? `${style.bgLight} ${style.border} ring-2 ${style.ring} shadow-xs font-bold`
                       : 'bg-stone-50/70 border-stone-200 text-stone-700'
                   }`}
                 >
-                  <div className="flex items-center justify-center gap-1 mb-0.5">
-                    <span className={`w-2 h-2 rounded-full shrink-0 ${style.dot}`} />
-                    <span className="text-[10px] sm:text-[11px] truncate max-w-[80px] sm:max-w-[90px]" title={team.name}>
+                  <div className="flex items-center justify-center gap-1.5 mb-1">
+                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${style.dot}`} />
+                    <span className="text-[11px] sm:text-xs font-semibold truncate max-w-[110px] sm:max-w-[140px]" title={team.name}>
                       {team.name}
                     </span>
                   </div>
-                  <div className="text-base sm:text-lg font-extrabold font-display leading-tight text-stone-900">
+                  <div className="text-lg sm:text-2xl font-extrabold font-display leading-tight text-stone-900">
                     {score}{' '}
-                    <span className="text-[10px] font-normal text-stone-600">pts</span>
+                    <span className="text-[11px] sm:text-xs font-normal text-stone-600">pts</span>
                   </div>
                 </div>
               );

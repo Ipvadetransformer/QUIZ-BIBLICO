@@ -166,7 +166,7 @@ export default function App() {
 
       {/* Footer */}
       <footer className="border-t border-amber-200/80 bg-white/70 py-6 text-center text-xs text-stone-700 print:hidden">
-        <div className="max-w-4xl mx-auto px-4 space-y-1">
+        <div className="w-full max-w-5xl lg:max-w-6xl 2xl:max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-1">
           <p className="font-semibold text-stone-800">
             Quiz Bíblico Interativo — Escola Bíblica Dominical & Discipulado
           </p>

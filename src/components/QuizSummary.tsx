@@ -171,7 +171,7 @@ export const QuizSummary: React.FC<QuizSummaryProps> = ({
 
   return (
     <div
-      className="max-w-4xl mx-auto px-4 py-8 sm:py-12 space-y-8 print:p-0 print:m-0"
+      className="w-full max-w-5xl lg:max-w-6xl 2xl:max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 print:p-0 print:m-0"
       style={{ fontSize: `${fontScale}rem` }}
     >
       {/* Celebration Header Card */}

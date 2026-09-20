@@ -273,7 +273,7 @@ export const QuestionManagerModal: React.FC<QuestionManagerModalProps> = ({
       className="fixed inset-0 z-50 bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-5 overflow-y-auto"
       style={{ zoom: fontScale }}
     >
-      <div className="bg-white border border-stone-200 rounded-2xl w-full max-w-4xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div className="bg-white border border-stone-200 rounded-2xl w-full max-w-4xl lg:max-w-5xl 2xl:max-w-6xl max-h-[92vh] flex flex-col shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Modal Header */}
         <div className="p-4 sm:p-5 border-b border-stone-200 bg-amber-50/70 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
