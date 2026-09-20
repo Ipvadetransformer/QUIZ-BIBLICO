@@ -35,10 +35,31 @@ export default function App() {
   });
   const [activeQuestions, setActiveQuestions] = useState<Question[]>([]);
   const [records, setRecords] = useState<AnswerRecord[]>([]);
-  const [fontScale, setFontScale] = useState<number>(1.0);
+  const [fontScale, setFontScale] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('ebd_font_scale');
+      if (saved) {
+        const val = parseFloat(saved);
+        if (!isNaN(val) && val >= 0.9 && val <= 1.5) return val;
+      }
+    } catch {
+      // fallback
+    }
+    return 1.0;
+  });
   const [isMuted, setIsMuted] = useState<boolean>(false);
   const [isQuestionBankOpen, setIsQuestionBankOpen] = useState<boolean>(false);
   const [isQuestionManagerOpen, setIsQuestionManagerOpen] = useState<boolean>(false);
+
+  // Apply font scale to document root element so all Tailwind `rem` typography scales smoothly
+  useEffect(() => {
+    document.documentElement.style.fontSize = `${fontScale * 100}%`;
+    try {
+      localStorage.setItem('ebd_font_scale', fontScale.toString());
+    } catch {
+      // ignore
+    }
+  }, [fontScale]);
 
   // Custom user questions loaded from localStorage
   const [customQuestions, setCustomQuestions] = useState<Question[]>([]);

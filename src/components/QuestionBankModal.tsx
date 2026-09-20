@@ -68,10 +68,7 @@ export const QuestionBankModal: React.FC<QuestionBankModalProps> = ({
 
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-stone-900/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 animate-in fade-in duration-200">
-      <div
-        className="bg-white w-full max-w-4xl lg:max-w-5xl 2xl:max-w-6xl rounded-2xl border border-amber-200 shadow-xl max-h-[90vh] flex flex-col overflow-hidden"
-        style={{ fontSize: `${fontScale}rem` }}
-      >
+      <div className="bg-white w-full max-w-4xl lg:max-w-5xl 2xl:max-w-6xl rounded-2xl border border-amber-200 shadow-xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Modal Header */}
         <div className="p-4 sm:p-6 border-b border-stone-200 flex items-center justify-between bg-amber-50/70">
           <div>

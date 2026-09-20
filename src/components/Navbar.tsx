@@ -33,7 +33,11 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   const handleFontToggle = () => {
     soundManager.playClick();
-    setFontScale((prev) => (prev >= 1.25 ? 0.95 : prev === 0.95 ? 1.1 : 1.25));
+    setFontScale((prev) => {
+      if (prev <= 1.05) return 1.15;
+      if (prev <= 1.2) return 1.3;
+      return 1.0;
+    });
   };
 
   return (
@@ -77,7 +81,10 @@ export const Navbar: React.FC<NavbarProps> = ({
             <Type className="w-4 h-4 text-stone-600" />
             <span className="hidden md:inline">Texto:</span>
             <span className="text-[11px] font-bold text-amber-800 hidden sm:inline">
-              {fontScale <= 0.95 ? 'Padrão' : fontScale <= 1.1 ? 'Médio' : 'Grande'}
+              {fontScale <= 1.05 ? 'Padrão' : fontScale <= 1.2 ? 'Médio (115%)' : 'Grande (130%)'}
+            </span>
+            <span className="text-[10px] font-bold text-amber-800 sm:hidden">
+              {fontScale <= 1.05 ? 'A' : fontScale <= 1.2 ? 'A+' : 'A++'}
             </span>
           </button>
 

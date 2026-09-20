@@ -265,10 +265,7 @@ export const QuizPlay: React.FC<QuizPlayProps> = ({
     (currentIndex === 0 || questions[currentIndex - 1]?.difficulty !== currentQuestion.difficulty);
 
   return (
-    <div
-      className="w-full max-w-5xl lg:max-w-6xl 2xl:max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 pb-16 sm:pb-8"
-      style={{ fontSize: `${fontScale}rem` }}
-    >
+    <div className="w-full max-w-5xl lg:max-w-6xl 2xl:max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8 space-y-4 sm:space-y-6 pb-16 sm:pb-8">
       {/* Progressive Difficulty Stage Announcement Bar */}
       {config.orderByDifficulty && (
         <div className="flex items-center justify-between p-2 sm:p-2.5 px-3 sm:px-4 rounded-xl bg-amber-50 border border-amber-200 text-xs text-amber-900 font-semibold shadow-2xs">

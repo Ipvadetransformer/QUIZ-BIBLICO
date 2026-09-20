@@ -170,10 +170,7 @@ export const QuizSummary: React.FC<QuizSummaryProps> = ({
   };
 
   return (
-    <div
-      className="w-full max-w-5xl lg:max-w-6xl 2xl:max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 print:p-0 print:m-0"
-      style={{ fontSize: `${fontScale}rem` }}
-    >
+    <div className="w-full max-w-5xl lg:max-w-6xl 2xl:max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8 print:p-0 print:m-0">
       {/* Celebration Header Card */}
       <div className="bg-white rounded-2xl border border-amber-200/90 p-6 sm:p-10 shadow-sm text-center relative overflow-hidden">
         <div className="absolute -top-12 -right-12 w-40 h-40 rounded-full bg-amber-100/50 pointer-events-none blur-2xl" />
